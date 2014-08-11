@@ -4,8 +4,11 @@ using System.Collections;
 public class Player : Photon.MonoBehaviour {
 	public Camera PlyCam;
 	public Control controls;
+	public int balls = 5;
+	public GameObject ballObj;
+	
 	void Awake() {
-
+		if(balls==0){ballObj.SetActive(false);}
 		if (photonView.isMine) {
 			PlyCam.gameObject.SetActive (true);
 			controls.enabled = true;
@@ -41,4 +44,25 @@ public class Player : Photon.MonoBehaviour {
 		}
 	}
 
+	[RPC]
+	public void AddBall(){
+		balls++;
+		ballObj.SetActive(true);
+	}
+	
+	[RPC]
+	public void ThrowBall(Vector3 pos){
+		balls--;
+		if(balls == 0){ballObj.SetActive(false); return;}
+		if (PhotonNetwork.isMasterClient) {
+			
+			GameObject obj =   PhotonNetwork.InstantiateSceneObject("Ball", pos, Quaternion.identity, 0, null) as GameObject;
+			obj.GetComponent<Ball>().state = Ball.BallState.Thrown;
+			obj.rigidbody.velocity = this.rigidbody.velocity;
+			//obj.rigidbody.AddRelativeForce(Vector3.forward * 2000);
+			obj.rigidbody.velocity += transform.TransformDirection(Vector3.forward)*15;
+			obj.rigidbody.AddForce(Vector3.up * 500);
+		}
+	}
+	
 }

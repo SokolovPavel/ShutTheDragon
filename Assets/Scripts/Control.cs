@@ -2,12 +2,15 @@
 using System.Collections;
 
 public class Control : Photon.MonoBehaviour {
-
+	
+	private Player ply;
+	public Transform ballPos;
 	public Rigidbody plane;
 	public float maxThr;
 	public int thrStep;
 	public float minThr;
-
+	public float pitchCoef = 60f;
+	public float yawCoef = 45f;
 	private Vector3 fwd;
 	private float xSpd;
 	private float ySpd;
@@ -28,7 +31,7 @@ public class Control : Photon.MonoBehaviour {
 			rigidbody.isKinematic = true;
 		}
 		plane = this.gameObject.rigidbody;
-
+		ply = this.gameObject.GetComponent<Player>();
 		seaLevel = this.transform.position.y;
 		fwd = transform.TransformDirection (Vector3.up);
 
@@ -60,8 +63,8 @@ public class Control : Photon.MonoBehaviour {
 
 			plane.AddForce (Vector3.up* plane.mass * 9.85f );
 			plane.AddRelativeForce (Vector3.forward* thrust);
-			plane.AddRelativeTorque (0,  xSpd*35.0f,0);
-			plane.AddRelativeTorque ( -ySpd*35.0f, 0,0);
+			plane.AddRelativeTorque (0,  xSpd*yawCoef ,0);
+			plane.AddRelativeTorque ( -ySpd*pitchCoef , 0,0);
 		}
 
 	}
@@ -69,6 +72,12 @@ public class Control : Photon.MonoBehaviour {
 
 	void Update() {
 		if (photonView.isMine) {
+		
+			if(Input.GetMouseButtonDown(0)){
+				if(ply.balls>0){
+				ply.photonView.RPC("ThrowBall",PhotonTargets.All,ballPos.position);
+				}
+			}
 
 			xSpd = Input.GetAxis ("Mouse X");
 			ySpd = Input.GetAxis ("Mouse Y");
@@ -90,7 +99,7 @@ public class Control : Photon.MonoBehaviour {
 			if (Input.GetKey (KeyCode.LeftShift) && (Input.GetKey ("a"))) {
 				plane.AddRelativeForce (-10000, 0, 0);
 			} else if (Input.GetKey ("a")) {
-				plane.AddRelativeTorque (0, 0, 20);
+				plane.AddRelativeTorque (0, 0, 75);
 				//	dampRoll = false;
 			}
 
@@ -98,7 +107,7 @@ public class Control : Photon.MonoBehaviour {
 				plane.AddRelativeForce (10000, 0, 0);
 			} else if (Input.GetKey ("d")) {
 				//dampRoll = false;
-				plane.AddRelativeTorque (0, 0, -20);
+				plane.AddRelativeTorque (0, 0, -75);
 			} 
 
 			if(Input.GetKey("x")){
