@@ -43,12 +43,17 @@ public class Control : Photon.MonoBehaviour {
 			GUI.Label (new Rect (20, 40, 200, 20), "SPD: " + Mathf.FloorToInt (curSpd));
 			GUI.Label (new Rect (20, 60, 200, 20), "ALT: " + Mathf.FloorToInt (alt));
 			GUI.Label (new Rect (Screen.width / 2 - 100, Screen.height / 2 - 30, 200, 20), "Range: " + Mathf.FloorToInt (range));
+
+            GUI.Label(new Rect(20, 80, 200, 20), "MouseX: " + xSpd);
+            GUI.Label(new Rect(20, 100, 200, 20), "MouseY: " + ySpd);
 		}
 	}
 
 	void FixedUpdate ()
 	{	
 		if (photonView.isMine) {
+            xSpd = Input.GetAxis("Mouse X");
+            ySpd = Input.GetAxis("Mouse Y");
 			curSpd = plane.velocity.magnitude;
 
 			Screen.lockCursor = true;
@@ -75,12 +80,11 @@ public class Control : Photon.MonoBehaviour {
 		
 			if(Input.GetMouseButtonDown(0)){
 				if(ply.balls>0){
-				ply.photonView.RPC("ThrowBall",PhotonTargets.All,ballPos.position);
+				ply.photonView.RPC("ThrowBall",PhotonTargets.All);
 				}
 			}
 
-			xSpd = Input.GetAxis ("Mouse X");
-			ySpd = Input.GetAxis ("Mouse Y");
+		
 
 			if(Input.GetKey("s")){
 				thrust -= thrStep;

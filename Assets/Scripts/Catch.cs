@@ -12,7 +12,8 @@ public class Catch : Photon.MonoBehaviour {
 		if(col.gameObject.tag == "Ball") {
 		
 		if(col.gameObject.GetComponent<Ball>().state == Ball.BallState.FreeFlight){
-			PhotonNetwork.Destroy(col.gameObject);
+            col.gameObject.GetComponent<Ball>().photonView.RPC("SelfDestruct", PhotonTargets.All);
+			//PhotonNetwork.Destroy(col.gameObject);
 			ply.photonView.RPC("AddBall",PhotonTargets.All);
 			
 	//	}

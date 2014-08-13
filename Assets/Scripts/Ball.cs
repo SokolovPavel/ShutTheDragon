@@ -85,4 +85,13 @@ public class Ball : Photon.MonoBehaviour {
 	
 	
 	}
+
+    [RPC]
+    public void SelfDestruct()
+    {
+        if (photonView.isMine)
+        {
+            PhotonNetwork.Destroy(this.gameObject);
+        }
+    }
 }

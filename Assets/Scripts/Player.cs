@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Player : Photon.MonoBehaviour {
-	public Camera PlyCam;
+	public GameObject PlyCam;
 	public Control controls;
 	public int balls = 5;
 	public GameObject ballObj;
@@ -51,12 +51,13 @@ public class Player : Photon.MonoBehaviour {
 	}
 	
 	[RPC]
-	public void ThrowBall(Vector3 pos){
-		balls--;
+	public void ThrowBall(){
+		
 		if(balls == 0){ballObj.SetActive(false); return;}
-		if (PhotonNetwork.isMasterClient) {
+        balls--;
+		if (photonView.isMine) {
 			
-			GameObject obj =   PhotonNetwork.InstantiateSceneObject("Ball", pos, Quaternion.identity, 0, null) as GameObject;
+			GameObject obj =   PhotonNetwork.Instantiate("Ball", ballObj.transform.position, Quaternion.identity, 0, null) as GameObject;
 			obj.GetComponent<Ball>().state = Ball.BallState.Thrown;
 			obj.rigidbody.velocity = this.rigidbody.velocity;
 			//obj.rigidbody.AddRelativeForce(Vector3.forward * 2000);
