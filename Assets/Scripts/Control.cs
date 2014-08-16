@@ -20,11 +20,20 @@ public class Control : Photon.MonoBehaviour {
 	private float alt;
 	private float range;
 	private float curSpd;
+    public GameObject camObj;
+    public Camera cam;
+    private float camDefFOV;
+    private Vector3 camDefPos;
+    private Vector3 camPos;
 
+    //private Vector3 vertVec;
 
 
 	void Awake () {
 		if (photonView.isMine) {
+            cam = camObj.GetComponent<Camera>();
+            camDefFOV = cam.fieldOfView;
+            camDefPos = transform.position - camObj.transform.position;
 			Screen.lockCursor = true;
 			rigidbody.isKinematic = false;
 		} else {
@@ -44,8 +53,9 @@ public class Control : Photon.MonoBehaviour {
 			GUI.Label (new Rect (20, 60, 200, 20), "ALT: " + Mathf.FloorToInt (alt));
 			GUI.Label (new Rect (Screen.width / 2 - 100, Screen.height / 2 - 30, 200, 20), "Range: " + Mathf.FloorToInt (range));
 
-            GUI.Label(new Rect(20, 80, 200, 20), "MouseX: " + xSpd);
-            GUI.Label(new Rect(20, 100, 200, 20), "MouseY: " + ySpd);
+           // GUI.Label(new Rect(20, 80, 200, 20), "MouseX: " + xSpd);
+           // GUI.Label(new Rect(20, 100, 200, 20), "MouseY: " + ySpd);
+            GUI.Label(new Rect(20, 80, 200, 20), "Angle: " + Vector3.Dot(transform.TransformDirection(Vector3.up),Vector3.up));
 		}
 	}
 
@@ -70,6 +80,13 @@ public class Control : Photon.MonoBehaviour {
 			plane.AddRelativeForce (Vector3.forward* thrust);
 			plane.AddRelativeTorque (0,  xSpd*yawCoef ,0);
 			plane.AddRelativeTorque ( -ySpd*pitchCoef , 0,0);
+           // plane.AddRelativeTorque(0, 0, (1 - Vector3.Dot(transform.TransformDirection(Vector3.up), Vector3.up)) * 50);
+
+            //vertVec = 
+          //  camObj.transform.position = transform.position - camDefPos +camObj.transform.TransformDirection(Vector3.back) * Mathf.Abs(curSpd * 0.1f);
+         //   camObj.transform.LookAt(this.transform);
+
+
 		}
 
 	}
@@ -100,18 +117,18 @@ public class Control : Photon.MonoBehaviour {
 				}
 			}
 
-			if (Input.GetKey (KeyCode.LeftShift) && (Input.GetKey ("a"))) {
+			if (Input.GetKey (KeyCode.LeftShift) && (Input.GetKeyDown ("a"))) {
 				plane.AddRelativeForce (-10000, 0, 0);
 			} else if (Input.GetKey ("a")) {
-				plane.AddRelativeTorque (0, 0, 75);
+				plane.AddRelativeTorque (0, 0, 90);
 				//	dampRoll = false;
 			}
 
-			if(Input.GetKey(KeyCode.LeftShift)&&(Input.GetKey("d"))){
+			if(Input.GetKey(KeyCode.LeftShift)&&(Input.GetKeyDown("d"))){
 				plane.AddRelativeForce (10000, 0, 0);
 			} else if (Input.GetKey ("d")) {
 				//dampRoll = false;
-				plane.AddRelativeTorque (0, 0, -75);
+				plane.AddRelativeTorque (0, 0, -90);
 			} 
 
 			if(Input.GetKey("x")){

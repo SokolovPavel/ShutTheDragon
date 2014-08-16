@@ -63,6 +63,10 @@ public class Player : Photon.MonoBehaviour {
 			//obj.rigidbody.AddRelativeForce(Vector3.forward * 2000);
 			obj.rigidbody.velocity += transform.TransformDirection(Vector3.forward)*15;
 			obj.rigidbody.AddForce(Vector3.up * 500);
+            if (balls == 0)
+            {
+                ballObj.SetActive(false);
+            }
 		}
 	}
 	

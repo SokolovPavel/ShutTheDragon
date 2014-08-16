@@ -18,13 +18,32 @@ public class Ball : Photon.MonoBehaviour {
 	Thrown
 	
 	}
-	
+
+    private Vector3[] points = new Vector3[32];
+    private int pointsCount;
+    private GameObject pointHolder;
+    private Vector3 targetPosition;
+
+    private readonly VectorPid angularVelocityController = new VectorPid(33.7766f, 0, 0.2553191f);
+    private readonly VectorPid headingController = new VectorPid(50.244681f, 0, 0.06382979f);
+
 	
 	// Use this for initialization
 	void Awake () {
 			if (photonView.isMine) {
 			Screen.lockCursor = true;
 			rigidbody.isKinematic = false;
+            pointHolder = GameObject.Find("BallWaypoints");
+            int i = 0;
+            foreach (Transform child in pointHolder.transform)
+            {
+                points[i] = child.position;
+               // points[i] = child;
+                i++;
+            }
+            pointsCount = i;
+            targetPosition = points[Random.Range(0, pointsCount)];
+               
 			
 		} else {
 			rigidbody.isKinematic = true;
@@ -40,9 +59,35 @@ public class Ball : Photon.MonoBehaviour {
 		if(state == BallState.FreeFlight) {
 			rigidbody.AddForce(0,rigidbody.mass * 9.84f,0);
 			rigidbody.AddRelativeForce(Vector3.forward * thrust);
-			
-			if(Random.Range(0, turnChance)==15) {
-				rigidbody.AddRelativeTorque(Random.Range(0, 50),Random.Range(0, 50),Random.Range(0, 50));
+
+            var angularVelocityError = rigidbody.angularVelocity * -1;
+           // Debug.DrawRay(transform.position, rigidbody.angularVelocity * 5, Color.black);
+
+            var angularVelocityCorrection = angularVelocityController.Update(angularVelocityError, Time.deltaTime);
+          //  Debug.DrawRay(transform.position, angularVelocityCorrection, Color.green);
+
+            rigidbody.AddTorque(angularVelocityCorrection);
+
+            var desiredHeading = targetPosition - transform.position;
+         //   Debug.DrawRay(transform.position, desiredHeading, Color.magenta);
+
+            var currentHeading = transform.forward;
+        //    Debug.DrawRay(transform.position, currentHeading * 5, Color.blue);
+
+            var headingError = Vector3.Cross(currentHeading, desiredHeading);
+            var headingCorrection = headingController.Update(headingError, Time.deltaTime);
+
+            rigidbody.AddTorque(headingCorrection);
+
+
+
+
+
+
+			if(Random.Range(0, turnChance)==33) {
+				//rigidbody.AddRelativeTorque(Random.Range(0, 50),Random.Range(0, 50),Random.Range(0, 50));
+                targetPosition = points[Random.Range(0, pointsCount)];
+
 				thrust = Random.Range(minThrust,maxThrust);
 			}
 
@@ -55,6 +100,7 @@ public class Ball : Photon.MonoBehaviour {
 			}
 		}
 	}
+
 	}
 	
 		void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
@@ -79,6 +125,7 @@ public class Ball : Photon.MonoBehaviour {
 			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * 5);
 			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * 5);
 		}
+        Debug.DrawRay(transform.position, targetPosition -transform.position);
 	}
 	
 	void DistCheck() {
