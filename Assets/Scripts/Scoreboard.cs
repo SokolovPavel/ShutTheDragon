@@ -44,7 +44,9 @@ public class Scoreboard : Photon.MonoBehaviour {
             {
                 Players.RemoveAt(i);
                 Scores.RemoveAt(i);
+                Destroy(Labels[i]);
                 Labels.RemoveAt(i);
+
             }
         }
     }

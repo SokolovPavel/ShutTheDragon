@@ -60,7 +60,7 @@ public class Player : Photon.MonoBehaviour {
            // typing = InRoomChat.typing;
           //  if (typing) { chatIcon.SetActive(true); } else { chatIcon.SetActive(false); }   
         }
-        Debug.Log(typing);
+       // Debug.Log(typing);
         if (typing) { chatIcon.SetActive(true); } else { chatIcon.SetActive(false); }
 
 	}
@@ -80,6 +80,7 @@ public class Player : Photon.MonoBehaviour {
 			
 			GameObject obj =   PhotonNetwork.Instantiate("Ball", ballObj.transform.position, Quaternion.identity, 0, null) as GameObject;
 			obj.GetComponent<Ball>().state = Ball.BallState.Thrown;
+            obj.GetComponent<Ball>().photonView.RPC("SetBallState", PhotonTargets.All, (int)Ball.BallState.Thrown);
 			obj.rigidbody.velocity = this.rigidbody.velocity;
 			//obj.rigidbody.AddRelativeForce(Vector3.forward * 2000);
 			obj.rigidbody.velocity += transform.TransformDirection(Vector3.forward)*15;

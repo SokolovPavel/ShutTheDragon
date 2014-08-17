@@ -102,6 +102,8 @@ public class Ball : Photon.MonoBehaviour {
 			time += Time.fixedDeltaTime;
 			if (time>throwTime){
 				state = BallState.FreeFlight;
+                photonView.RPC("SetBallState",PhotonTargets.All,(int)BallState.FreeFlight);
+
 			}
 		}
 	}
@@ -146,4 +148,19 @@ public class Ball : Photon.MonoBehaviour {
             PhotonNetwork.Destroy(this.gameObject);
         }
     }
+
+   
+
+    public void SetBallState(BallState st)
+    {
+        state = st;
+    }
+
+    [RPC]
+    public void SetBallState(int st)
+    {
+        state = (BallState)st;
+        Debug.Log(st);
+    }
+
 }
