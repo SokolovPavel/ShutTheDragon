@@ -4,6 +4,9 @@ using System.Collections;
 public class InGame : MonoBehaviour {
 
 	public Transform playerPrefab;
+    private bool spawned;
+
+    private GameObject ply;
 
 	public void Awake()
 	{
@@ -15,7 +18,7 @@ public class InGame : MonoBehaviour {
 		}
 
 		// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-		PhotonNetwork.Instantiate(this.playerPrefab.name, transform.position, Quaternion.identity, 0);
+		//PhotonNetwork.Instantiate(this.playerPrefab.name, transform.position, Quaternion.identity, 0);
 	}
 
 	public void OnGUI()
@@ -24,6 +27,39 @@ public class InGame : MonoBehaviour {
 		{
 			PhotonNetwork.LeaveRoom();  // we will load the menu level when we successfully left the room
 		}
+
+        if (!spawned)
+        {
+            GUI.skin.box.fontStyle = FontStyle.Bold;
+            GUI.Box(new Rect((Screen.width - 400) / 2, (Screen.height - 350) / 2, 400, 300), "Select your team");
+
+            GUILayout.BeginArea(new Rect((Screen.width - 400) / 2, (Screen.height - 350) / 2, 400, 300));
+
+            GUILayout.Space(75);
+
+            // Player name
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(75);
+            if (GUILayout.Button("BLU", GUILayout.Width(70)))
+            {
+                spawned = true;
+                ply = PhotonNetwork.Instantiate(this.playerPrefab.name, transform.position, Quaternion.identity, 0) as GameObject;
+                ply.GetComponent<Player>().photonView.RPC("SetTeam", PhotonTargets.AllBuffered, 0);
+
+            }
+            GUILayout.Space(50);
+            if (GUILayout.Button("RED", GUILayout.Width(70)))
+            {
+                spawned = true;
+               ply = PhotonNetwork.Instantiate(this.playerPrefab.name, transform.position, Quaternion.identity, 0) as GameObject;
+               ply.GetComponent<Player>().photonView.RPC("SetTeam", PhotonTargets.AllBuffered, 1);
+
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+        }
+
+
 	}
 
 	public void OnMasterClientSwitched(PhotonPlayer player)

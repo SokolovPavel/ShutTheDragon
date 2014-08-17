@@ -26,8 +26,8 @@ public class Ball : Photon.MonoBehaviour {
     private GameObject pointHolder;
     private Vector3 targetPosition;
 
-    private readonly VectorPid angularVelocityController = new VectorPid(33.7766f, 0, 0.2553191f);
-    private readonly VectorPid headingController = new VectorPid(50.244681f, 0, 0.06382979f);
+    private readonly VectorPid angularVelocityController = new VectorPid(50.8f, 0, 0.27f);
+    private readonly VectorPid headingController = new VectorPid(60f, 0, 0.08f);
 
 	
 	// Use this for initialization

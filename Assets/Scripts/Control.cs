@@ -2,7 +2,10 @@
 using System.Collections;
 
 public class Control : Photon.MonoBehaviour {
-	
+
+    public GUIStyle guiMarks;
+    public GUIStyle normalStyle;
+
 	private Player ply;
 	public Transform ballPos;
 	public Rigidbody plane;
@@ -26,6 +29,18 @@ public class Control : Photon.MonoBehaviour {
     private Vector3 camDefPos;
     private Vector3 camPos;
 
+
+    public Texture2D crosshairTex;
+    private Rect crosshairPos;
+
+
+    private GameObject selectedBall;
+    private GameObject selectedPlayer;
+
+
+    private readonly VectorPid angularVelocityController = new VectorPid(14.8f, 0, 0.27f);
+    private readonly VectorPid headingController = new VectorPid(37f, 0, 0.08f);
+
     //private Vector3 vertVec;
 
 
@@ -44,19 +59,34 @@ public class Control : Photon.MonoBehaviour {
 		seaLevel = this.transform.position.y;
 		fwd = transform.TransformDirection (Vector3.up);
 
+        crosshairPos = new Rect((Screen.width - crosshairTex.width) / 2, (Screen.height - crosshairTex.height) / 2, crosshairTex.width, crosshairTex.height);
+
 	}
 
 	void OnGUI() {
 		if (photonView.isMine) {
-			GUI.Label (new Rect (20, 20, 200, 20), "THR: " + thrust);
-			GUI.Label (new Rect (20, 40, 200, 20), "SPD: " + Mathf.FloorToInt (curSpd));
-			GUI.Label (new Rect (20, 60, 200, 20), "ALT: " + Mathf.FloorToInt (alt));
-			GUI.Label (new Rect (Screen.width / 2 - 100, Screen.height / 2 - 30, 200, 20), "Range: " + Mathf.FloorToInt (range));
+            
 
-            GUI.Label(new Rect(20, 80, 200, 20), "Balls: " + ply.balls);
+            GUI.DrawTexture(crosshairPos, crosshairTex);
+
+			GUI.Label (new Rect (20, 20, 200, 20), "THR: " + thrust,normalStyle);
+            GUI.Label(new Rect(20, 40, 200, 20), "SPD: " + Mathf.FloorToInt(curSpd), normalStyle);
+            GUI.Label(new Rect(20, 60, 200, 20), "ALT: " + Mathf.FloorToInt(alt), normalStyle);
+            GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 30, 200, 20), "Range: " + Mathf.FloorToInt(range), normalStyle);
+
+            GUI.Label(new Rect(20, 80, 200, 20), "Balls: " + ply.balls, normalStyle);
            // GUI.Label(new Rect(20, 80, 200, 20), "MouseX: " + xSpd);
            // GUI.Label(new Rect(20, 100, 200, 20), "MouseY: " + ySpd);
             //GUI.Label(new Rect(20, 80, 200, 20), "Angle: " + Vector3.Dot(transform.TransformDirection(Vector3.up),Vector3.up));
+
+
+            if ((selectedBall != null)&&(selectedBall.renderer.isVisible))
+            {
+                Vector3 bPos = cam.WorldToScreenPoint(selectedBall.transform.position);
+              //  GUI.Label(new Rect(Screen.width - bPos.x, bPos.y, 20, 20),"+");
+                GUI.Label(new Rect(bPos.x - 21,Screen.height - bPos.y- 13, 30, 60), "<  >", guiMarks);
+            }
+
 		}
 	}
 
@@ -102,7 +132,30 @@ public class Control : Photon.MonoBehaviour {
 				}
 			}
 
-		
+        if (Input.GetMouseButtonDown(2))
+            {
+                RaycastHit hit;
+                if (Physics.SphereCast(transform.position + new Vector3(0,0.5f,0), 1.2f, transform.TransformDirection(Vector3.forward), out hit, 400.0f)) {
+                    if (hit.collider.tag == "Ball")
+                    {
+                        selectedBall = hit.collider.gameObject;
+                    }
+
+                    if (hit.collider.tag == "Player")
+                    {
+                        selectedPlayer = hit.collider.gameObject;
+                    }
+
+                    Debug.Log(hit.transform.gameObject.name);
+                }
+               
+            }
+
+
+            if (Input.GetKey("r"))
+             {
+                Pursuit(selectedBall);
+             }
 
 			if(Input.GetKey("s")){
 				thrust -= thrStep;
@@ -144,4 +197,22 @@ public class Control : Photon.MonoBehaviour {
 
 		}
 	}
+
+
+    private void Pursuit(GameObject target)
+    {
+        if (target == null) { return; }
+
+        var angularVelocityError = plane.angularVelocity * -1;
+        var angularVelocityCorrection = angularVelocityController.Update(angularVelocityError, Time.deltaTime);
+       plane.AddTorque(angularVelocityCorrection);
+        var desiredHeading = target.transform.position - transform.position;
+        var currentHeading = transform.forward;
+        var headingError = Vector3.Cross(currentHeading, desiredHeading);
+        var headingCorrection = headingController.Update(headingError, Time.deltaTime);
+        plane.AddTorque(headingCorrection);
+
+
+    }
+
 }

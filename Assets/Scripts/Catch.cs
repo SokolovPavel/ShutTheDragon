@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Catch : Photon.MonoBehaviour {
 	public Player ply;
+    
 	void Awake() {
 		
 	//	ply = this.transform.parent.gameObject.GetComponent<Player>();
@@ -22,7 +23,7 @@ public class Catch : Photon.MonoBehaviour {
                     col.gameObject.GetComponent<TrailRenderer>().enabled = false;
                     col.gameObject.GetComponent<MeshRenderer>().enabled = false;
                     col.enabled = false;
-
+                    audio.Play();
                 }
             }
         }

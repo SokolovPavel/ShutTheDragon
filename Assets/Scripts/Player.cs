@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class Player : Photon.MonoBehaviour {
+    public int team;
+
 	public GameObject PlyCam;
 	public Control controls;
 	public int balls = 5;
@@ -64,6 +66,26 @@ public class Player : Photon.MonoBehaviour {
         if (typing) { chatIcon.SetActive(true); } else { chatIcon.SetActive(false); }
 
 	}
+
+    [RPC]
+    public void SetTeam(int index)
+    {
+        team = index;
+       
+            foreach (Renderer ren in gameObject.GetComponentsInChildren<Renderer>())
+            {
+                if (index == 0)
+                {
+                ren.material.color = new Color(0, 0, 1f);
+                }
+                else
+                {
+                    ren.material.color = new Color(1f, 0, 0);
+                }
+            }
+
+        
+    }
 
 	[RPC]
 	public void AddBall(){

@@ -7,7 +7,7 @@ using System.Collections;
 using Random = UnityEngine.Random;
 
 public class Lobby : MonoBehaviour {
-	private string roomName = "myRoom";
+	private string roomName = "RandomMatch";
 
 	private Vector2 scrollPos = Vector2.zero;
 
@@ -54,7 +54,7 @@ public class Lobby : MonoBehaviour {
 
 			if (this.connectFailed)
 			{
-				GUILayout.Label("Connection failed. Check setup and use Setup Wizard to fix configuration.");
+				GUILayout.Label("Connection failed.");
 				GUILayout.Label(String.Format("Server: {0}", new object[] {PhotonNetwork.ServerAddress}));
 				GUILayout.Label("AppId: " + PhotonNetwork.PhotonServerSettings.AppID);
 
@@ -84,6 +84,7 @@ public class Lobby : MonoBehaviour {
 		{
 			// Save name
 			PlayerPrefs.SetString("playerName", PhotonNetwork.playerName);
+            
 		}
 		GUILayout.EndHorizontal();
 

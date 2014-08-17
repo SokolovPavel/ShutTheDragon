@@ -9,14 +9,14 @@ public class Scoreboard : Photon.MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-	    foreach(GameObject ply in GameObject.FindGameObjectsWithTag("Player"))
+	    foreach(PhotonPlayer ply in PhotonNetwork.playerList)
         {
-             Players.Add(ply.GetComponent<Player>().photonView.owner.name);
-             int index = Players.IndexOf(ply.GetComponent<Player>().photonView.owner.name);
+             Players.Add(ply.name);
+             int index = Players.IndexOf(ply.name);
              Scores.Add(0);
              Labels.Add(Instantiate(Label, this.transform.position + new Vector3(0.55f,4- index*1.2f, -7.5f), Quaternion.Euler(0,-90,0)) as GameObject);
              Labels[index].GetComponent<TextMesh>().text = Players[index] + "   " + Scores[index];
-
+           //  ply.SetCustomProperties()
         }
 	}
 	
