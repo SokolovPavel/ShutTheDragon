@@ -5,6 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(PhotonView))]
 public class InRoomChat : Photon.MonoBehaviour 
 {
+    public static bool typing;
     public Rect GuiRect = new Rect(0,0, 250,300);
     public bool IsVisible = true;
     public bool AlignBottom = false;
@@ -33,6 +34,7 @@ public class InRoomChat : Photon.MonoBehaviour
         {
             if (!string.IsNullOrEmpty(this.inputLine))
             {
+                typing = false;
                 this.photonView.RPC("Chat", PhotonTargets.All, this.inputLine);
                 this.inputLine = "";
                 GUI.FocusControl("");
@@ -41,6 +43,8 @@ public class InRoomChat : Photon.MonoBehaviour
             else
             {
                 GUI.FocusControl("ChatInput");
+                typing = true;
+              //  Debug.Log(typing);
             }
         }
 

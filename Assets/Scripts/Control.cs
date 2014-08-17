@@ -53,9 +53,10 @@ public class Control : Photon.MonoBehaviour {
 			GUI.Label (new Rect (20, 60, 200, 20), "ALT: " + Mathf.FloorToInt (alt));
 			GUI.Label (new Rect (Screen.width / 2 - 100, Screen.height / 2 - 30, 200, 20), "Range: " + Mathf.FloorToInt (range));
 
+            GUI.Label(new Rect(20, 80, 200, 20), "Balls: " + ply.balls);
            // GUI.Label(new Rect(20, 80, 200, 20), "MouseX: " + xSpd);
            // GUI.Label(new Rect(20, 100, 200, 20), "MouseY: " + ySpd);
-            GUI.Label(new Rect(20, 80, 200, 20), "Angle: " + Vector3.Dot(transform.TransformDirection(Vector3.up),Vector3.up));
+            //GUI.Label(new Rect(20, 80, 200, 20), "Angle: " + Vector3.Dot(transform.TransformDirection(Vector3.up),Vector3.up));
 		}
 	}
 

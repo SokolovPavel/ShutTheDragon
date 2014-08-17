@@ -71,6 +71,7 @@ public class InGame : MonoBehaviour {
 	public void OnPhotonInstantiate(PhotonMessageInfo info)
 	{
 		Debug.Log("OnPhotonInstantiate " + info.sender);    // you could use this info to store this or react
+       // Debug.Log(info.sender.name);
 	}
 
 	public void OnPhotonPlayerConnected(PhotonPlayer player)

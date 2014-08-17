@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Ball : Photon.MonoBehaviour {
 	
+    public string OwnerName;// = photonView.
+
 	private Vector3 fwd;
 	private float time;
 	public float triggerDist;
@@ -31,6 +33,7 @@ public class Ball : Photon.MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 			if (photonView.isMine) {
+           
 			Screen.lockCursor = true;
 			rigidbody.isKinematic = false;
             pointHolder = GameObject.Find("BallWaypoints");
@@ -51,6 +54,8 @@ public class Ball : Photon.MonoBehaviour {
 
 		fwd = transform.TransformDirection (Vector3.up);
 		state = BallState.FreeFlight;
+
+        OwnerName = photonView.owner.name;
 	}
 	
 	// Update is called once per frame

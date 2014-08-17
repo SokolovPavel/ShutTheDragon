@@ -6,7 +6,13 @@ public class Player : Photon.MonoBehaviour {
 	public Control controls;
 	public int balls = 5;
 	public GameObject ballObj;
-	
+
+    public GameObject chatIcon;
+
+    private bool typing;
+
+    public int score;
+
 	void Awake() {
 		if(balls==0){ballObj.SetActive(false);}
 		if (photonView.isMine) {
@@ -24,10 +30,13 @@ public class Player : Photon.MonoBehaviour {
 		if (stream.isWriting) {
 			stream.SendNext (transform.position);
 			stream.SendNext (transform.rotation);
+            stream.SendNext(typing);
+
 
 		} else {
 			correctPlayerPos = (Vector3)stream.ReceiveNext();
 			correctPlayerRot = (Quaternion)stream.ReceiveNext();
+            typing = (bool)stream.ReceiveNext();
 		}
 	}
 
@@ -38,10 +47,22 @@ public class Player : Photon.MonoBehaviour {
 	{
 		if (!photonView.isMine)
 		{
+           
 			//Update remote player (smooth this, this looks good, at the cost of some accuracy)
 			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * 5);
 			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * 5);
-		}
+
+
+        }
+        else
+        {
+            typing = InRoomChat.typing;
+           // typing = InRoomChat.typing;
+          //  if (typing) { chatIcon.SetActive(true); } else { chatIcon.SetActive(false); }   
+        }
+        Debug.Log(typing);
+        if (typing) { chatIcon.SetActive(true); } else { chatIcon.SetActive(false); }
+
 	}
 
 	[RPC]
